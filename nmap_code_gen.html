@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .nmap-container {
+      background-color: #1A1A1A;
+      border: 2px solid #3B3B3B;
+      border-radius: 10px;
+      padding: 20px;
+      width: 800px;
+      margin: 20px auto;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+    input, select, textarea, button {
+      padding: 10px;
+      margin: 8px 0;
+      background-color: #333333;
+      border: 1px solid #cccccc;
+      color: #ffffff;
+      font-size: 14px;
+      box-sizing: border-box;
+      border-radius: 5px;
+    }
+    input[type="checkbox"] {
+      width: auto;
+      margin: 8px 10px 8px 0;
+    }
+    .checkbox-group {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background-color: #252525;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .checkbox-column {
+      display: flex;
+      flex-direction: column;
+      width: 48%;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      padding: 5px;
+    }
+    .checkbox-row span.param {
+      background-color: #444444;
+      border: 1px solid #666666;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-right: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    .checkbox-row select.rate {
+      background-color: #444444;
+      border: 1px solid #666666;
+      padding: 6px;
+      border-radius: 4px;
+      margin-right: 12px;
+      font-family: 'Courier New', monospace;
+      color: #ffffff;
+      width: 80px;
+    }
+    .checkbox-row .description {
+      margin-left: 10px;
+      color: #cccccc;
+      font-size: 12px;
+      flex-grow: 1;
+      text-align: left;
+    }
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    #targetInput {
+      width: 100%;
+      border: 2px solid #AD1315;
+    }
+    #nmapOutput {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      background-color: #333333;
+      border: 1px solid #cccccc;
+      color: #ffffff;
+      font-size: 14px;
+      min-height: 100px;
+      text-align: left;
+      resize: vertical;
+      font-family: 'Courier New', monospace;
+      border-radius: 5px;
+    }
+    #generateButton {
+      background-color: #AD1315;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 8px 0;
+      width: 300px;
+    }
+    #generateButton:hover {
+      background-color: #D60609;
+    }
+    p.note {
+      font-size: 12px;
+      color: #cccccc;
+      margin: 10px 0;
+    }
+    h3 {
+      margin: 0 0 20px 0;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nmap-container">
+    <h3>👁️ Generador de Comandos Nmap </h3>
+    <div class="checkbox-group">
+      <div class="checkbox-column">
+        <div class="checkbox-row">
+          <input type="checkbox" id="sudoCheck">
+          <span class="param">sudo</span>
+          <span class="description">Ejecuta Nmap con privilegios de root.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="synCheck">
+          <span class="param">-sS</span>
+          <span class="description">Escaneo SYN para puertos TCP.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="scriptsCheck">
+          <span class="param">-sC</span>
+          <span class="description">Ejecuta scripts NSE predeterminados.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="versionCheck">
+          <span class="param">-sV</span>
+          <span class="description">Detecta versiones de servicios.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="udpCheck">
+          <span class="param">-sU</span>
+          <span class="description">Escaneo de puertos UDP.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="tcpConnectCheck">
+          <span class="param">-sT</span>
+          <span class="description">Escaneo TCP Connect para puertos TCP.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="noDnsCheck">
+          <span class="param">-n</span>
+          <span class="description">Desactiva la resolución de nombres DNS.</span>
+        </div>
+      </div>
+      <div class="checkbox-column">
+        <div class="checkbox-row">
+          <input type="checkbox" id="vulnScriptCheck">
+          <span class="param">--script=vuln</span>
+          <span class="description">Ejecuta scripts de vulnerabilidades.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="minRateCheck">
+          <span class="param">--min-rate=</span>
+          <select class="rate" id="minRateValue">
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+            <option value="5000">5000</option>
+          </select>
+          <span class="description">Establece la tasa mínima de paquetes por segundo.</span>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="openCheck">
+          <span class="param">--open</span>
+          <span class="description">Muestra solo puertos abiertos.</span>
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <select id="ports">
+        <option value="">Puertos a escanear</option>
+        <option value="--top-ports 100">Top 100 puertos</option>
+        <option value="--top-ports 500">Top 500 puertos</option>
+        <option value="--top-ports 1000">Top 1000 puertos</option>
+        <option value="-p-">Todos los puertos (-p-)</option>
+      </select>
+      <select id="verbosity">
+        <option value="">Nivel de verbosidad</option>
+        <option value="-v">Verbosidad baja (-v)</option>
+        <option value="-vv">Verbosidad alta (-vv)</option>
+      </select>
+      <select id="timing">
+        <option value="">Agresividad</option>
+        <option value="-T0">Paranoico (-T0)</option>
+        <option value="-T1">Sigiloso (-T1)</option>
+        <option value="-T2">Cortés (-T2)</option>
+        <option value="-T3">Normal (-T3)</option>
+        <option value="-T4">Agresivo (-T4)</option>
+        <option value="-T5">Insano (-T5)</option>
+      </select>
+      <input type="text" id="outputFile" placeholder="Archivo de salida (ej. nmap_scan.txt)">
+    </div>
+    <input type="text" id="targetInput" placeholder="IP objetivo (ej. 192.168.1.1)">
+    <button id="generateButton" onclick="generateNmapCommand()">Generar línea de comandos</button>
+    <textarea id="nmapOutput" readonly placeholder="El comando aparecerá aquí"></textarea>
+    <p class="note">Nota: Herramienta educativa. Usa Nmap solo con permiso explícito del propietario del sistema</p>
+  </div>
+
+  <script>
+    function generateNmapCommand() {
+      const sudoCheck = document.getElementById('sudoCheck').checked;
+      const synCheck = document.getElementById('synCheck').checked;
+      const scriptsCheck = document.getElementById('scriptsCheck').checked;
+      const versionCheck = document.getElementById('versionCheck').checked;
+      const udpCheck = document.getElementById('udpCheck').checked;
+      const tcpConnectCheck = document.getElementById('tcpConnectCheck').checked;
+      const openCheck = document.getElementById('openCheck').checked;
+      const vulnScriptCheck = document.getElementById('vulnScriptCheck').checked;
+      const minRateCheck = document.getElementById('minRateCheck').checked;
+      const minRateValue = document.getElementById('minRateValue').value;
+      const noDnsCheck = document.getElementById('noDnsCheck').checked;
+      const ports = document.getElementById('ports').value;
+      const verbosity = document.getElementById('verbosity').value;
+      const timing = document.getElementById('timing').value;
+      const target = document.getElementById('targetInput').value.trim();
+      const outputFile = document.getElementById('outputFile').value.trim();
+      const output = document.getElementById('nmapOutput');
+
+      if (!target) {
+        output.value = 'Por favor, ingresa una IP o dominio válido.';
+        return;
+      }
+      if (!/^[a-zA-Z0-9.-]+$/.test(target)) {
+        output.value = 'Entrada inválida. Usa solo letras, números, puntos o guiones (ej. 192.168.1.1 o example.com).';
+        return;
+      }
+      if (!synCheck && !scriptsCheck && !versionCheck && !udpCheck && !tcpConnectCheck && !openCheck && !vulnScriptCheck && !minRateCheck && !noDnsCheck) {
+        output.value = 'Por favor, selecciona al menos un tipo de escaneo u opción.';
+        return;
+      }
+      if (outputFile && !/^[a-zA-Z0-9._-]+$/.test(outputFile)) {
+        output.value = 'Nombre de archivo inválido. Usa solo letras, números, guiones, puntos o guiones bajos.';
+        return;
+      }
+
+      let command = '';
+      if (sudoCheck) command += 'sudo ';
+      command += 'nmap ';
+
+      if (synCheck) command += '-sS ';
+      if (scriptsCheck) command += '-sC ';
+      if (versionCheck) command += '-sV ';
+      if (udpCheck) command += '-sU ';
+      if (tcpConnectCheck) command += '-sT ';
+      if (vulnScriptCheck) command += '--script=vuln ';
+      if (minRateCheck) command += `--min-rate=${minRateValue} `;
+      if (openCheck) command += '--open ';
+
+      if (ports) command += `${ports} `;
+
+      if (noDnsCheck) command += '-n ';
+
+      if (verbosity) command += `${verbosity} `;
+
+      if (timing) command += `${timing} `;
+
+      command += `${target} `;
+
+      if (outputFile) command += `-oN ${outputFile}`;
+
+      output.value = command.trim();
+    }
+  </script>
+</body>
+</html>
