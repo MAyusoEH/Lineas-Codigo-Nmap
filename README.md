@@ -3,7 +3,7 @@
 
 
 ## Funcionamiento:
-Permite crear rápidamente líneas de código personalizadas de Nmap para escanear equipos y redes.
+Permite crear rápidamente líneas de código personalizadas de Nmap para escanear equipos y redes, simplemente seleccionando las opciones deseadas.
 
 
 ## Cómo usar:
